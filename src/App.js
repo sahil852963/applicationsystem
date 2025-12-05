@@ -5,6 +5,8 @@ import { ProtectedRoute } from "./component/ProtectedRoute";
 import { PublicRoute } from "./component/PublicRoute";
 import { LeaveForm } from "./component/LeaveForm/LeaveForm.jsx";
 import { Register } from "./component/Authentication/Register/Register.jsx";
+import { ResetPassword } from "./component/Authentication/ResetPassword/ResetPassword.jsx";
+import { ForgotPassword } from "./component/Authentication/ForgotPassword/ForgotPassword.jsx";
 import { Login } from "./component/Authentication/Login/Login.jsx";
 import { Home } from "./pages/Home.jsx";
 import { AuthContext, AuthProvider } from "./context/AuthContext";
@@ -24,6 +26,8 @@ function App() {
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             <Route path="/" element={<Home />} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+            <Route path="/reset-password/:token" element={<PublicRoute><ResetPassword /></PublicRoute>} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

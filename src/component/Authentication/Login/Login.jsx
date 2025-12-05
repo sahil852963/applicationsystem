@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../context/AuthContext.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Login.css";
 
 export const Login = () => {
@@ -47,6 +47,7 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
+        <Link to="/forgot-password" className="forgot-link">Forgot Password</Link>
       </form>
     </div>
   );
