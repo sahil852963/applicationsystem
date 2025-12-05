@@ -10,7 +10,7 @@ export const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post(`http://localhost:3500/api/reset-password/${token}`, { password });
+    await axios.post(`${process.env.REACT_APP_API_URL}/reset-password/${token}`, { password });
     navigate("/login");
   };
 
