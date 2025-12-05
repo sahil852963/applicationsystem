@@ -1,13 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import "./App.css";
-import { ProtectedRoute } from "./component/ProtectedRoute";
-import { PublicRoute } from "./component/PublicRoute";
-import { LeaveForm } from "./component/LeaveForm/LeaveForm.jsx";
-import { Register } from "./component/Authentication/Register/Register.jsx";
-import { ResetPassword } from "./component/Authentication/ResetPassword/ResetPassword.jsx";
-import { ForgotPassword } from "./component/Authentication/ForgotPassword/ForgotPassword.jsx";
-import { Login } from "./component/Authentication/Login/Login.jsx";
+import { ProtectedRoute, PublicRoute, LeaveForm, Register, ResetPassword, ForgotPassword, Login } from "./component";
 import { Home } from "./pages/Home.jsx";
 import { AuthContext, AuthProvider } from "./context/AuthContext";
 
