@@ -2,17 +2,17 @@ import "./LeaveForm.css";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../../context/AuthContext";  
+import { AuthContext } from "../../context/AuthContext";
 
 export const LeaveForm = () => {
-
-  const { logout } = useContext(AuthContext);
+  const { userEmail, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const initialFormData = {
     leave_type: "",
     start_date: "",
     end_date: "",
     reason: "",
+    email: userEmail,
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -26,9 +26,9 @@ export const LeaveForm = () => {
   };
 
   const handleLogoutClick = () => {
-    logout()
-    navigate("/");    
-  }
+    logout();
+    navigate("/");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,8 +40,15 @@ export const LeaveForm = () => {
 
     setLoading(true);
     try {
-      const url = "https://demo.netmente.com/leaveapplication/api/submit";
-      const response = await axios.post(url, formData);
+      const token = localStorage.getItem("token");
+
+      const url = `${process.env.REACT_APP_API_URL}/send`;
+      const response = await axios.post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       setMessage("Leave submitted successfully!");
       setFormData(initialFormData);
     } catch (error) {
@@ -100,6 +107,13 @@ export const LeaveForm = () => {
           name="reason"
           value={formData.reason}
           onChange={handleChange}
+          required
+        />
+        <input
+          type="hidden"
+          name="email"
+          value={userEmail}
+          min={today}
           required
         />
 

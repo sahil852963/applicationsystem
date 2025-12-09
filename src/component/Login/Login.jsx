@@ -21,7 +21,7 @@ export const Login = () => {
       });
 
       if (res) {
-        login(res.data.token);
+        login(res.data.token, res.data.user.email);
         navigate("/send-mail");
       }
     } catch (err) {
@@ -47,7 +47,7 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
-        <Link to="/forgot-password" className="forgot-link">Forgot Password</Link>
+        {/* <Link to="/forgot-password" className="forgot-link">Forgot Password</Link> */}
       </form>
     </div>
   );

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext.js";
 import "./Register.css";
 
+
 export const Register = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -35,6 +36,8 @@ export const Register = () => {
         fieldErrors.email = "Email is required";
 
       // Custom message for duplicate email
+
+      // =================================
       if (
         backendMessage.includes("Email already registered") ||
         backendMessage.includes("duplicate key")
@@ -44,6 +47,7 @@ export const Register = () => {
 
       if (backendMessage.includes("password"))
         fieldErrors.password = "Password is required";
+      // ===========================
 
       setErrors(fieldErrors);
       console.error(backendMessage);

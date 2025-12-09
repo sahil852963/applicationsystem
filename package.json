@@ -1,6 +1,7 @@
 {
   "name": "leaveappsystemfrontend",
   "version": "0.1.0",
+  "homepage": "/leaveapplication",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",

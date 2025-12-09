@@ -27,7 +27,7 @@ export const Home = () => {
       <div className="home-buttons">
         {!token && (
           <>
-            <button onClick={handleRegisterClick}>Register</button>
+            {/* <button onClick={handleRegisterClick}>Register</button> */}
             <button onClick={handleLoginClick}>Login</button>
           </>
         )}
