@@ -5,124 +5,124 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
 export const LeaveForm = () => {
-  const { userEmail, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const initialFormData = {
-    leave_type: "",
-    start_date: "",
-    end_date: "",
-    reason: "",
-    email: userEmail,
-  };
+	const { userEmail, logout } = useContext(AuthContext);
+	const navigate = useNavigate();
+	const initialFormData = {
+		leave_type: "",
+		start_date: "",
+		end_date: "",
+		reason: "",
+		email: userEmail,
+	};
 
-  const [formData, setFormData] = useState(initialFormData);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+	const [formData, setFormData] = useState(initialFormData);
+	const [loading, setLoading] = useState(false);
+	const [message, setMessage] = useState("");
 
-  const today = new Date().toISOString().split("T")[0];
+	const today = new Date().toISOString().split("T")[0];
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+	const handleChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
 
-  const handleLogoutClick = () => {
-    logout();
-    navigate("/");
-  };
+	const handleLogoutClick = () => {
+		logout();
+		navigate("/");
+	};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-    if (formData.end_date < formData.start_date) {
-      alert("End Date cannot be before Start Date");
-      return;
-    }
+		if (formData.end_date < formData.start_date) {
+			alert("End Date cannot be before Start Date");
+			return;
+		}
 
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
+		setLoading(true);
+		try {
+			const token = localStorage.getItem("token");
 
-      const url = `${process.env.REACT_APP_API_URL}/send`;
-      const response = await axios.post(url, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+			const url = `${process.env.REACT_APP_API_URL}/send`;
+			const response = await axios.post(url, formData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
-      setMessage("Leave submitted successfully!");
-      setFormData(initialFormData);
-    } catch (error) {
-      console.error(error);
-      setMessage("Failed to submit leave. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+			setMessage("Leave submitted successfully!");
+			setFormData(initialFormData);
+		} catch (error) {
+			console.error(error);
+			setMessage("Failed to submit leave. Try again.");
+		} finally {
+			setLoading(false);
+		}
+	};
 
-  return (
-    <>
-      <h1>Leave Application System</h1>
-      <button onClick={handleLogoutClick}>Logout</button>
-      <form className="leave-form" onSubmit={handleSubmit}>
-        <label htmlFor="input-leave-type">Leave Type</label>
-        <select
-          name="leave_type"
-          id="input-leave-type"
-          value={formData.leave_type}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Leave Type</option>
-          <option value="short">Short Leave</option>
-          <option value="full_day">Full Day Leave</option>
-          <option value="half">Half Day Leave</option>
-          <option value="restricted">Restricted Leave</option>
-        </select>
+	return (
+		<>
+			<h1>Leave Application System</h1>
+			<button onClick={handleLogoutClick}>Logout</button>
+			<form className="leave-form" onSubmit={handleSubmit}>
+				<label htmlFor="input-leave-type">Leave Type</label>
+				<select
+					name="leave_type"
+					id="input-leave-type"
+					value={formData.leave_type}
+					onChange={handleChange}
+					required
+				>
+					<option value="">Select Leave Type</option>
+					<option value="short">Short Leave</option>
+					<option value="full_day">Full Day Leave</option>
+					<option value="half">Half Day Leave</option>
+					<option value="restricted">Restricted Leave</option>
+				</select>
 
-        <label htmlFor="input-start-date">Start Date</label>
-        <input
-          type="date"
-          id="input-start-date"
-          name="start_date"
-          value={formData.start_date}
-          onChange={handleChange}
-          min={today}
-          required
-        />
+				<label htmlFor="input-start-date">Start Date</label>
+				<input
+					type="date"
+					id="input-start-date"
+					name="start_date"
+					value={formData.start_date}
+					onChange={handleChange}
+					min={today}
+					required
+				/>
 
-        <label htmlFor="input-end-date">End Date</label>
-        <input
-          type="date"
-          id="input-end-date"
-          name="end_date"
-          value={formData.end_date}
-          onChange={handleChange}
-          min={formData.start_date || today}
-          required
-        />
+				<label htmlFor="input-end-date">End Date</label>
+				<input
+					type="date"
+					id="input-end-date"
+					name="end_date"
+					value={formData.end_date}
+					onChange={handleChange}
+					min={formData.start_date || today}
+					required
+				/>
 
-        <label htmlFor="input-reason">Reason</label>
-        <textarea
-          id="input-reason"
-          name="reason"
-          value={formData.reason}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="hidden"
-          name="email"
-          value={userEmail}
-          min={today}
-          required
-        />
+				<label htmlFor="input-reason">Reason</label>
+				<textarea
+					id="input-reason"
+					name="reason"
+					value={formData.reason}
+					onChange={handleChange}
+					required
+				/>
+				<input
+					type="hidden"
+					name="email"
+					value={userEmail}
+					min={today}
+					required
+				/>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? "Submitting..." : "Submit Leave"}
-        </button>
+				<button type="submit" className="submit-btn" disabled={loading}>
+					{loading ? "Submitting..." : "Submit Leave"}
+				</button>
 
-        {message && <p style={{ marginTop: "10px" }}>{message}</p>}
-      </form>
-    </>
-  );
+				{message && <p style={{ marginTop: "10px" }}>{message}</p>}
+			</form>
+		</>
+	);
 };
