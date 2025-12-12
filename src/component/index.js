@@ -5,4 +5,5 @@ export { Login } from "./Login/Login.jsx";
 export { ProtectedRoute } from "./ProtectedRoute.js";
 export { PublicRoute } from "./PublicRoute.js";
 export { LeaveForm } from "./LeaveForm/LeaveForm.jsx";
-export { RestrictedCalendar } from "./RestrictedCalendar/RestrictedCalendar.jsx";
+export { RestrictedCalendarSingle } from "./Calendar/RestrictedCalendarSingle.jsx";
+export { MultiDateCalendar } from "./Calendar/MultiDateCalendar.jsx";

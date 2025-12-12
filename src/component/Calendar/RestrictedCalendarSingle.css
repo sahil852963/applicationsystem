@@ -17,12 +17,21 @@
   width: 100% !important;
 }
 
-.react-datepicker__week {
-  display: flex;
-  justify-content: space-between;
-}
-
 .react-datepicker__day {
   flex: 1;
   text-align: center;
 }
+
+.react-datepicker__day-names {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    text-align: center;
+}
+
+.react-datepicker__week {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    text-align: center;
+}
+
+

@@ -61,3 +61,11 @@
 .login-error{
   color:red;
 }
+
+.login-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}

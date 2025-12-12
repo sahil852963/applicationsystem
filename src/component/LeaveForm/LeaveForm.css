@@ -12,3 +12,11 @@
 .d-none {
     display: none !important;
 }
+
+.leave-card {
+    width: 420px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
