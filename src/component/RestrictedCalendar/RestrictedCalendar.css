@@ -1,0 +1,28 @@
+/* Highlight allowed restricted dates */
+.allowed-date {
+  background-color: #ffd700 !important; /* golden color */
+  color: black !important;
+  border-radius: 50% !important;
+  font-weight: bold;
+}
+.react-datepicker {
+  width: 100% !important;
+}
+
+.react-datepicker__month-container {
+  width: 100% !important;
+}
+
+.react-datepicker__month {
+  width: 100% !important;
+}
+
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-between;
+}
+
+.react-datepicker__day {
+  flex: 1;
+  text-align: center;
+}

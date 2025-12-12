@@ -1,62 +1,14 @@
 .leave-form {
-  width: 400px;
-  margin: 40px auto;
-  padding: 25px 30px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  font-family: "Poppins", sans-serif;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
 }
-
-.leave-form label {
-  font-size: 15px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.leave-form select,
-.leave-form input,
-.leave-form textarea {
-  font-size: 15px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  outline: none;
-  transition: 0.25s ease;
-}
-
-.leave-form select:focus,
-.leave-form input:focus,
-.leave-form textarea:focus {
-  border-color: #1d4ed8;
-  box-shadow: 0 0 4px rgba(29, 78, 216, 0.4);
-}
-
-textarea {
-  height: 80px;
-  resize: none;
-}
-
 .submit-btn {
-  background: #1d4ed8;
-  color: white;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  margin-top: 10px;
-  transition: 0.3s ease;
+    width: 100%;
 }
-
-.submit-btn:hover {
-  background: #1e40af;
-  transform: translateY(-2px);
+.d-none {
+    display: none !important;
 }
-
-

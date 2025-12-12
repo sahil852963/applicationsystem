@@ -15,8 +15,8 @@ function App() {
 	return (
 		<div className="App">
 			<AuthProvider>
-				{/* <BrowserRouter> */}
-				<BrowserRouter basename="/leaveapplication">
+				<BrowserRouter>
+				{/* <BrowserRouter basename="/leaveapplication"> */}
 					<Routes>
 						<Route path="/send-mail" element={<ProtectedRoute><LeaveForm /></ProtectedRoute>} />
 						<Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
