@@ -31,7 +31,6 @@ export const LeaveForm = () => {
 		const { name, value } = e.target;
 
 		if (name === "leave_type") {
-			// Show time for short or half leave
 			if (value === "short" || value === "half") {
 				setShowTime(true);
 			} else {
@@ -39,15 +38,13 @@ export const LeaveForm = () => {
 			}
 
 			if (value === "multi") {
-				// Multi leave: empty array and clear time
 				setFormData((prev) => ({
 					...prev,
 					leave_type: value,
-					date: [], // empty array for multiple dates
+					date: [], 
 					time: "",
 				}));
 			} else {
-				// Single date types: reset date to today
 				setFormData((prev) => ({
 					...prev,
 					leave_type: value,
@@ -55,10 +52,9 @@ export const LeaveForm = () => {
 					time: "",
 				}));
 			}
-			return; // done handling leave_type
+			return; 
 		}
 
-		// For other fields (reason, time, etc.)
 		setFormData((prev) => ({
 			...prev,
 			[name]: value,
@@ -140,23 +136,23 @@ export const LeaveForm = () => {
 						// 	}
 						// />
 						<RestrictedCalendarSingle
-						leaveType={formData.leave_type}
-						value={formData.date}
-						minDate={today}
-						onChange={(date) => {
-							if (formData.leave_type === "multi") {
-								setFormData((prev) => ({
-									...prev,
-									date: date.map((d) => d.toISOString()),
-								}));
-							} else {
-								setFormData((prev) => ({
-									...prev,
-									date: date.toISOString(),
-								}));
-							}
-						}}
-					/>
+							leaveType={formData.leave_type}
+							value={formData.date}
+							minDate={today}
+							onChange={(date) => {
+								if (formData.leave_type === "multi") {
+									setFormData((prev) => ({
+										...prev,
+										date: date.map((d) => d.toISOString()),
+									}));
+								} else {
+									setFormData((prev) => ({
+										...prev,
+										date: date.toISOString(),
+									}));
+								}
+							}}
+						/>
 					)}
 				</div>
 
