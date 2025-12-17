@@ -20,3 +20,16 @@
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
+
+.leave-form {
+  max-width: 100%;
+}
+
+.leave-table-wrapper {
+  max-height: 260px; /* prevents page from growing */
+  overflow-y: auto;
+}
+
+.leave-table-wrapper table {
+  margin-bottom: 0;
+}
