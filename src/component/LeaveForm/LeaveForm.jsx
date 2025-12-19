@@ -11,7 +11,6 @@ export const LeaveForm = () => {
 	const navigate = useNavigate();
 
 
-	// ---- Helpers ----
 	const formatDate = (dateObj) => {
 		const istDate = new Date(dateObj.getTime() + 5.5 * 60 * 60 * 1000);
 		return istDate.toISOString().split("T")[0];
@@ -38,7 +37,6 @@ export const LeaveForm = () => {
 		return dt;
 	});
 
-	// ---- State ----
 	const [leaveMode, setLeaveMode] = useState("single");
 	const [currentDay, setCurrentDay] = useState({
 		date: formatDate(today),
@@ -51,7 +49,6 @@ export const LeaveForm = () => {
 	const [messageType, setMessageType] = useState("success");
 	const [loading, setLoading] = useState(false);
 
-	// ---- Handlers ----
 	const handleLogoutClick = () => {
 		logout();
 		navigate("/");
@@ -88,7 +85,6 @@ export const LeaveForm = () => {
 
 
 	const handleAddDay = () => {
-		// session required for short / half
 		if (
 			(currentDay.leave_type === "half" || currentDay.leave_type === "short") &&
 			!currentDay.session
@@ -96,7 +92,6 @@ export const LeaveForm = () => {
 			return alert("Select session");
 		}
 
-		// duplicate date check
 		if (addedLeaves.some((l) => l.date === currentDay.date)) {
 			return alert("Date already added");
 		}
@@ -106,7 +101,6 @@ export const LeaveForm = () => {
 			const nextDate = getNextDate(currentDay.date);
 
 			const conflict = addedLeaves.find((l) => {
-				// Case 1: yesterday evening short → today morning short
 				if (
 					l.leave_type === "short" &&
 					l.date === prevDate &&
@@ -116,7 +110,6 @@ export const LeaveForm = () => {
 					return true;
 				}
 
-				// Case 2: today evening short → tomorrow morning short
 				if (
 					l.leave_type === "short" &&
 					l.date === nextDate &&
@@ -136,10 +129,8 @@ export const LeaveForm = () => {
 			}
 		}
 
-		// ✅ add leave
 		setAddedLeaves([...addedLeaves, { ...currentDay }]);
 
-		// reset
 		setCurrentDay({
 			date: formatDate(today),
 			leave_type: "full_day",
@@ -190,7 +181,6 @@ export const LeaveForm = () => {
 		}
 	};
 
-	// ---- JSX ----
 	return (
 		<div className="container-fluid px-3 px-md-5">
 			<div className="row justify-content-center">
@@ -249,16 +239,12 @@ export const LeaveForm = () => {
 									dateOnly.setHours(0, 0, 0, 0);
 									const dateStr = formatDate(dateOnly);
 
-									// 🔒 RESTRICTED MODE
 									if (leaveMode === "restricted") {
-										// block past dates
 										if (dateOnly < today) return false;
 
-										// allow ONLY restricted dates
 										return restrictedDates.includes(dateStr);
 									}
 
-									// 🔓 NORMAL MODE
 									const day = dateOnly.getDay();
 									const isWeekend = day === 0 || day === 6;
 									const isAdded = addedLeaves.some((l) => l.date === dateStr);
