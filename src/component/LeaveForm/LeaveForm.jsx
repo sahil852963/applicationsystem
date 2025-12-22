@@ -229,7 +229,11 @@ export const LeaveForm = () => {
 							<label className="form-label">Select Date</label>
 							<DatePicker
 								inline
-								selected={new Date(currentDay.date)}
+								selected={
+									leaveMode === "restricted"
+									? null
+									: new Date(currentDay.date)
+								}
 								minDate={today}
 								maxDate={maxDate}
 								dateFormat="yyyy-MM-dd"
@@ -357,6 +361,7 @@ export const LeaveForm = () => {
 							<label className="form-label">Reason</label>
 							<textarea
 								className="form-control"
+								placeholder="Reason for leave . . ."
 								rows="3"
 								value={reason}
 								onChange={(e) => setReason(e.target.value)}
