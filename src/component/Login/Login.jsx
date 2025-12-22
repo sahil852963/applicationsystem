@@ -7,14 +7,17 @@ import "./Login.css";
 export const Login = () => {
 	const { login } = useContext(AuthContext);
 	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
 	const handleSubmit = async (e) => {
+		
 		e.preventDefault();
 		try {
+			setLoading(true);
 			const res = await axios.post(`${process.env.REACT_APP_API_URL}/login`, {
 				email,
 				password,
@@ -25,6 +28,7 @@ export const Login = () => {
 				navigate("/send-mail");
 			}
 		} catch (err) {
+			setLoading(false);
 			const message =
 				err.response?.data?.message ||
 				err.response?.data ||
@@ -70,9 +74,9 @@ export const Login = () => {
 							/>
 						</div>
 
-						<button type="submit" className="btn btn-primary w-100 mt-2">
-							Login
-						</button>
+						<button className="btn btn-primary w-100 mt-2" disabled={loading}>
+							{loading ? "Loading..." : "Login"}
+						</button> 
 					</form>
 
 					{/* <div className="text-center mt-3">

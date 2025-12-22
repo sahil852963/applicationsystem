@@ -25,10 +25,9 @@ export const LeaveForm = () => {
 	const maxDate = addMonths(today, 1);
 
 	const restrictedDates = [
-		"2025-03-10",
-		"2025-03-15",
-		"2025-05-22",
-		"2025-12-28",
+		"2026-04-03",
+		"2025-09-04",
+		"2025-10-29",
 	].filter((d) => new Date(d) >= today);
 
 	const restrictedDateObjects = restrictedDates.map(d => {
@@ -367,7 +366,7 @@ export const LeaveForm = () => {
 
 						<button className="btn btn-primary" disabled={loading}>
 							{loading ? "Submitting..." : "Submit Leave"}
-						</button>
+						</button> 
 
 					</form>
 				</div>
