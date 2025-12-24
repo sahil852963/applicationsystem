@@ -3,6 +3,7 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.js";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import { showToast } from "../FlashMessage.js"
 
 export const Login = () => {
 	const { login } = useContext(AuthContext);
@@ -33,7 +34,8 @@ export const Login = () => {
 				err.response?.data?.message ||
 				err.response?.data ||
 				"Something went wrong. Try again!";
-			setError(message);
+				showToast(message, "error");
+			
 			console.error(err.response?.data);
 		}
 	};
@@ -46,7 +48,7 @@ export const Login = () => {
 
 					<h4 className="text-center mb-4">Login</h4>
 
-					{error && <p className="alert alert-danger py-2">{error}</p>}
+					{/* {error && <p className="alert alert-danger py-2">{error}</p>} */}
 
 					<form onSubmit={handleSubmit}>
 

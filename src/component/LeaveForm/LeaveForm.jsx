@@ -1,5 +1,4 @@
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
+import Select from "react-select";
 import { useContext, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthContext } from "../../context/AuthContext";
 import "./LeaveForm.css";
+import { showToast } from "../FlashMessage.js"
 
 export const LeaveForm = () => {
 
@@ -14,6 +14,18 @@ export const LeaveForm = () => {
 		const istDate = new Date(dateObj.getTime() + 5.5 * 60 * 60 * 1000);
 		return istDate.toISOString().split("T")[0];
 	};
+
+	const leaveModeOptions = [
+		{ value: "single", label: "Single Leave" },
+		{ value: "multiple", label: "Multiple Leaves" },
+		{ value: "restricted", label: "Restricted" },
+	];
+
+	const leaveTypeOptions = [
+		{ value: "full_day", label: "Full Day" },
+		{ value: "half_day", label: "Half Day" },
+		{ value: "short_leave", label: "Short Leave" },
+	];
 
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
@@ -41,7 +53,7 @@ export const LeaveForm = () => {
 						date:
 							action.payload === "restricted"
 								? null
-								: formatDate(new Date()), 
+								: formatDate(new Date()),
 					},
 				};
 
@@ -101,31 +113,14 @@ export const LeaveForm = () => {
 		return dt;
 	});
 
-	const showToast = (message, type = "success") => {
-		Toastify({
-			text: message,
-			duration: 3000,
-			close: true,
-			gravity: "top",
-			position: "right",
-			stopOnFocus: true,
-			style: {
-				background:
-					type === "success"
-						? "linear-gradient(to right, #00b09b, #96c93d)"
-						: type === "warning"
-							? "linear-gradient(to right, #f7971e, #ffd200)"
-							: "linear-gradient(to right, #ff416c, #ff4b2b)",
-			},
-		}).showToast();
-	};
 
-
+	// Logout user
 	const handleLogoutClick = () => {
 		logout();
 		navigate("/");
 	};
 
+	// Handle Leave Type in case of multiple Leaves
 	const handleLeaveTypeChange = (e) => {
 		if (leaveMode === "restricted") return;
 		const type = e.target.value;
@@ -137,6 +132,7 @@ export const LeaveForm = () => {
 
 	};
 
+	// Handle morning/evening session change
 	const handleSessionChange = (e) => {
 		dispatch({
 			type: "SET_CURRENT_DAY",
@@ -159,6 +155,7 @@ export const LeaveForm = () => {
 	};
 
 
+	// Add multiple days in case of multiple Leaves. Add btn functionality
 	const handleAddDay = () => {
 		if (
 			(currentDay.leave_type === "half_day" || currentDay.leave_type === "short_leave") &&
@@ -220,10 +217,12 @@ export const LeaveForm = () => {
 	};
 
 
+	// Delete day from multiple leaves. Delete btn functionality
 	const handleDeleteDay = (date) => {
 		dispatch({ type: "DELETE_LEAVE", payload: date });
 	};
 
+	// Handle form submission
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -288,22 +287,23 @@ export const LeaveForm = () => {
 						{/* Leave Mode */}
 						<div className="mb-3">
 							<label className="form-label">Leave Mode</label>
-							<select
-								className="form-select"
-								value={leaveMode}
-								onChange={(e) =>
-									dispatch({ type: "SET_LEAVE_MODE", payload: e.target.value })
+							<Select
+								options={leaveModeOptions}
+								value={leaveModeOptions.find(opt => opt.value === leaveMode)}
+								onChange={(selected) =>
+									dispatch({
+										type: "SET_LEAVE_MODE",
+										payload: selected.value,
+									})
 								}
-							>
-								<option value="single">Single Leave</option>
-								<option value="multiple">Multiple Leaves</option>
-								<option value="restricted">Restricted</option>
-							</select>
+								placeholder="Select Leave Mode"
+								isSearchable={false}
+								classNamePrefix="react-select"
+							/>
 						</div>
 
 						{/* Date Picker */}
 						<div className="mb-3">
-							<label className="form-label">Select Date</label>
 							<DatePicker
 								inline
 								selected={
@@ -337,7 +337,6 @@ export const LeaveForm = () => {
 										type: "SET_CURRENT_DAY",
 										payload: { date: formatDate(date) },
 									});
-									// setCurrentDay({ ...currentDay, date: formatDate(date) });
 								}}
 							/>
 
@@ -347,15 +346,16 @@ export const LeaveForm = () => {
 						{leaveMode !== "restricted" && (
 							<div className="mb-3">
 								<label className="form-label">Leave Type</label>
-								<select
-									className="form-select"
-									value={currentDay.leave_type}
-									onChange={handleLeaveTypeChange}
-								>
-									<option value="full_day">Full Day</option>
-									<option value="half_day">Half Day</option>
-									<option value="short_leave">Short Leave</option>
-								</select>
+								<Select
+									options={leaveTypeOptions}
+									value={leaveTypeOptions.find(o => o.value === currentDay.leave_type)}
+									onChange={(selected) =>
+										dispatch({
+											type: "SET_CURRENT_DAY",
+											payload: { leave_type: selected.value },
+										})
+									}
+								/>
 							</div>
 						)}
 
