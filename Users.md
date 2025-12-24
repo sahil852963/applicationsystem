@@ -15,5 +15,6 @@ Sahil Dutt : sahil.dutt@netmente.com
 Amit Thakur : amit.kumar@netmente.com
 Seema : seema.devi@netmente.com
 Vijay Kumar : vijay@netmente.com
+Manpreet Singh Narang : narang@netmente.com
 
 Password:Netmente@#123 

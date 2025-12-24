@@ -1,4 +1,6 @@
-import { useContext, useState } from "react";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
+import { useContext, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DatePicker from "react-datepicker";
@@ -7,9 +9,6 @@ import { AuthContext } from "../../context/AuthContext";
 import "./LeaveForm.css";
 
 export const LeaveForm = () => {
-	const { userEmail, logout } = useContext(AuthContext);
-	const navigate = useNavigate();
-
 
 	const formatDate = (dateObj) => {
 		const istDate = new Date(dateObj.getTime() + 5.5 * 60 * 60 * 1000);
@@ -18,6 +17,72 @@ export const LeaveForm = () => {
 
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
+
+	const initialState = {
+		leaveMode: "single",
+		currentDay: {
+			date: formatDate(today),
+			leave_type: "full_day",
+			session: "",
+		},
+		addedLeaves: [],
+		reason: "",
+		loading: false,
+	};
+
+	const reducerFunction = (state, action) => {
+		switch (action.type) {
+			case "SET_LEAVE_MODE":
+				return {
+					...state,
+					leaveMode: action.payload,
+					currentDay: {
+						...state.currentDay,
+						date:
+							action.payload === "restricted"
+								? null
+								: formatDate(new Date()), 
+					},
+				};
+
+
+
+			case "SET_CURRENT_DAY":
+				return { ...state, currentDay: { ...state.currentDay, ...action.payload } };
+
+			case "ADD_LEAVE":
+				return { ...state, addedLeaves: [...state.addedLeaves, action.payload] };
+
+			case "DELETE_LEAVE":
+				return {
+					...state,
+					addedLeaves: state.addedLeaves.filter(l => l.date !== action.payload),
+				};
+
+			case "SET_REASON":
+				return { ...state, reason: action.payload };
+
+			case "SET_LOADING":
+				return { ...state, loading: action.payload };
+
+			case "RESET_FORM":
+				return {
+					...state,
+					currentDay: initialState.currentDay,
+					addedLeaves: [],
+					reason: "",
+				};
+
+			default:
+				return state;
+		}
+	};
+
+	const { userEmail, logout } = useContext(AuthContext);
+	const navigate = useNavigate();
+
+	const [state, dispatch] = useReducer(reducerFunction, initialState);
+	const { leaveMode, currentDay, addedLeaves, reason, loading } = state;
 
 	const addMonths = (date, months) =>
 		new Date(date.getFullYear(), date.getMonth() + months, date.getDate());
@@ -36,17 +101,25 @@ export const LeaveForm = () => {
 		return dt;
 	});
 
-	const [leaveMode, setLeaveMode] = useState("single");
-	const [currentDay, setCurrentDay] = useState({
-		date: formatDate(today),
-		leave_type: "full_day",
-		session: "",
-	});
-	const [addedLeaves, setAddedLeaves] = useState([]);
-	const [reason, setReason] = useState("");
-	const [message, setMessage] = useState("");
-	const [messageType, setMessageType] = useState("success");
-	const [loading, setLoading] = useState(false);
+	const showToast = (message, type = "success") => {
+		Toastify({
+			text: message,
+			duration: 3000,
+			close: true,
+			gravity: "top",
+			position: "right",
+			stopOnFocus: true,
+			style: {
+				background:
+					type === "success"
+						? "linear-gradient(to right, #00b09b, #96c93d)"
+						: type === "warning"
+							? "linear-gradient(to right, #f7971e, #ffd200)"
+							: "linear-gradient(to right, #ff416c, #ff4b2b)",
+			},
+		}).showToast();
+	};
+
 
 	const handleLogoutClick = () => {
 		logout();
@@ -57,15 +130,18 @@ export const LeaveForm = () => {
 		if (leaveMode === "restricted") return;
 		const type = e.target.value;
 
-		setCurrentDay({
-			...currentDay,
-			leave_type: type,
-			session: type === "half" || type === "short" ? currentDay.session : "",
+		dispatch({
+			type: "SET_CURRENT_DAY",
+			payload: { leave_type: type, session: type === "half_day" || type === "short_leave" ? currentDay.session : "" },
 		});
+
 	};
 
 	const handleSessionChange = (e) => {
-		setCurrentDay({ ...currentDay, session: e.target.value });
+		dispatch({
+			type: "SET_CURRENT_DAY",
+			payload: { session: e.target.value },
+		});
 	};
 
 	const getNextDate = (dateStr) => {
@@ -85,23 +161,25 @@ export const LeaveForm = () => {
 
 	const handleAddDay = () => {
 		if (
-			(currentDay.leave_type === "half" || currentDay.leave_type === "short") &&
+			(currentDay.leave_type === "half_day" || currentDay.leave_type === "short_leave") &&
 			!currentDay.session
 		) {
-			return alert("Select session");
+			showToast("Please select a session", "error");
+			return;
 		}
 
 		if (addedLeaves.some((l) => l.date === currentDay.date)) {
-			return alert("Date already added");
+			showToast("This date is already added", "error");
+			return;
 		}
 
-		if (currentDay.leave_type === "short") {
+		if (currentDay.leave_type === "short_leave") {
 			const prevDate = getPreviousDate(currentDay.date);
 			const nextDate = getNextDate(currentDay.date);
 
 			const conflict = addedLeaves.find((l) => {
 				if (
-					l.leave_type === "short" &&
+					l.leave_type === "short_leave" &&
 					l.date === prevDate &&
 					l.session === "evening" &&
 					currentDay.session === "morning"
@@ -110,7 +188,7 @@ export const LeaveForm = () => {
 				}
 
 				if (
-					l.leave_type === "short" &&
+					l.leave_type === "short_leave" &&
 					l.date === nextDate &&
 					l.session === "morning" &&
 					currentDay.session === "evening"
@@ -122,31 +200,49 @@ export const LeaveForm = () => {
 			});
 
 			if (conflict) {
-				return alert(
-					"Short leave requires a gap. You cannot take short leave on consecutive sessions."
+				showToast(
+					"Short leave requires a gap. You cannot take short leave on consecutive sessions.",
+					"error"
 				);
+
+				return;
+
 			}
 		}
 
-		setAddedLeaves([...addedLeaves, { ...currentDay }]);
+		dispatch({ type: "ADD_LEAVE", payload: currentDay });
 
-		setCurrentDay({
-			date: formatDate(today),
-			leave_type: "full_day",
-			session: "",
+		dispatch({
+			type: "SET_CURRENT_DAY",
+			payload: { date: formatDate(today), leave_type: "full_day", session: "" },
 		});
+
 	};
 
 
 	const handleDeleteDay = (date) => {
-		setAddedLeaves(addedLeaves.filter((l) => l.date !== date));
+		dispatch({ type: "DELETE_LEAVE", payload: date });
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		if (leaveMode === "multiple" && addedLeaves.length === 0)
-			return alert("Add at least one leave day");
+		if (reason.trim() === "") {
+			showToast("Please add Reason for Leave", "warning");
+			return;
+		}
+
+		if (!currentDay.date && leaveMode === "restricted") {
+			showToast("Select date for restricted leave", "error");
+			return;
+		}
+
+
+		if (leaveMode === "multiple" && addedLeaves.length === 0) {
+			showToast("Please add at least one leave day", "warning");
+			return;
+		}
+
 
 		const payload = {
 			email: userEmail,
@@ -161,22 +257,20 @@ export const LeaveForm = () => {
 		};
 
 		try {
-			setLoading(true);
+			dispatch({ type: "SET_LOADING", payload: true });
 			const token = localStorage.getItem("token");
 
 			await axios.post(`${process.env.REACT_APP_API_URL}/send`, payload, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 
-			setMessage("Leave submitted successfully!");
-			setMessageType("success");
-			setAddedLeaves([]);
-			setReason("");
+			showToast("Leave submitted successfully!", "success");
+			dispatch({ type: "RESET_FORM" });
+			dispatch({ type: "SET_REASON", payload: "" })
 		} catch {
-			setMessage("Failed to submit leave.");
-			setMessageType("error");
+			showToast("Failed to submit leave.", "error");
 		} finally {
-			setLoading(false);
+			dispatch({ type: "SET_LOADING", payload: false });
 		}
 	};
 
@@ -190,25 +284,6 @@ export const LeaveForm = () => {
 							Logout
 						</button>
 					</div>
-					{message && (
-						<div
-							className={`alert alert-dismissible fade show mt-3 d-flex align-items-center ${messageType === "success" ? "alert-success" : "alert-danger"
-								}`}
-							role="alert"
-							style={{ margin: "0 auto" }}
-						>
-							<span>{message}</span>
-							<button
-								type="button"
-								className="btn-close"
-								aria-label="Close"
-								onClick={() => setMessage("")}
-							></button>
-						</div>
-					)}
-
-
-
 					<form onSubmit={handleSubmit} className="leave-form text-start">
 						{/* Leave Mode */}
 						<div className="mb-3">
@@ -216,10 +291,12 @@ export const LeaveForm = () => {
 							<select
 								className="form-select"
 								value={leaveMode}
-								onChange={(e) => setLeaveMode(e.target.value)}
+								onChange={(e) =>
+									dispatch({ type: "SET_LEAVE_MODE", payload: e.target.value })
+								}
 							>
 								<option value="single">Single Leave</option>
-								<option value="multiple">Multiple Leave</option>
+								<option value="multiple">Multiple Leaves</option>
 								<option value="restricted">Restricted</option>
 							</select>
 						</div>
@@ -231,8 +308,8 @@ export const LeaveForm = () => {
 								inline
 								selected={
 									leaveMode === "restricted"
-									? null
-									: new Date(currentDay.date)
+										? null
+										: new Date(currentDay.date)
 								}
 								minDate={today}
 								maxDate={maxDate}
@@ -256,7 +333,11 @@ export const LeaveForm = () => {
 								}}
 								onChange={(date) => {
 									if (!date) return;
-									setCurrentDay({ ...currentDay, date: formatDate(date) });
+									dispatch({
+										type: "SET_CURRENT_DAY",
+										payload: { date: formatDate(date) },
+									});
+									// setCurrentDay({ ...currentDay, date: formatDate(date) });
 								}}
 							/>
 
@@ -272,16 +353,16 @@ export const LeaveForm = () => {
 									onChange={handleLeaveTypeChange}
 								>
 									<option value="full_day">Full Day</option>
-									<option value="half">Half Day</option>
-									<option value="short">Short Leave</option>
+									<option value="half_day">Half Day</option>
+									<option value="short_leave">Short Leave</option>
 								</select>
 							</div>
 						)}
 
 						{/* Session */}
 						{leaveMode !== "restricted" &&
-							(currentDay.leave_type === "half" ||
-								currentDay.leave_type === "short") && (
+							(currentDay.leave_type === "half_day" ||
+								currentDay.leave_type === "short_leave") && (
 								<div className="mb-3">
 									<label className="form-label">Session</label>
 									<div className="d-flex gap-3">
@@ -337,8 +418,8 @@ export const LeaveForm = () => {
 										{addedLeaves.map((l) => (
 											<tr key={l.date}>
 												<td>{l.date}</td>
-												<td>{l.leave_type}</td>
-												<td>{l.session || "-"}</td>
+												<td>{l.leave_type.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase())}</td>
+												<td>{l.session.replace(/\b\w/g, c => c.toUpperCase()) || "-"}</td>
 												<td>
 													<button
 														type="button"
@@ -364,14 +445,16 @@ export const LeaveForm = () => {
 								placeholder="Reason for leave . . ."
 								rows="3"
 								value={reason}
-								onChange={(e) => setReason(e.target.value)}
+								onChange={(e) =>
+									dispatch({ type: "SET_REASON", payload: e.target.value })
+								}
 								required
 							/>
 						</div>
 
 						<button className="btn btn-primary" disabled={loading}>
 							{loading ? "Submitting..." : "Submit Leave"}
-						</button> 
+						</button>
 
 					</form>
 				</div>
