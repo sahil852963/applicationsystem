@@ -41,14 +41,10 @@ export const Login = () => {
 	};
 
 	return (
-		<>
-			<h1 className="text-center mb-4">Leave Application System</h1>
-			<div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
-				<div className="card shadow-lg p-4" style={{ maxWidth: "400px", width: "100%" }}>
-
+		<div className="login-wrapper">
+			<h1 className="text-center mb-4 login-title">Leave Application System</h1>
+			<div className="card shadow-lg p-4 login-card">
 					<h4 className="text-center mb-4">Login</h4>
-
-					{/* {error && <p className="alert alert-danger py-2">{error}</p>} */}
 
 					<form onSubmit={handleSubmit}>
 
@@ -80,14 +76,7 @@ export const Login = () => {
 							{loading ? "Loading..." : "Login"}
 						</button> 
 					</form>
-
-					{/* <div className="text-center mt-3">
-					<Link to="/forgot-password" className="text-decoration-none">
-						Forgot Password?
-					</Link>
-				</div> */}
-				</div>
 			</div>
-		</>
+		</div>
 	);
 };

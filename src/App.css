@@ -40,7 +40,7 @@
 .App {
   text-align: center;
   font-family: "Poppins", sans-serif;
-  background: #e6ebf4;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
   padding-top: 40px;
 }

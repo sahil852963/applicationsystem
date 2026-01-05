@@ -274,189 +274,194 @@ export const LeaveForm = () => {
 	};
 
 	return (
-		<div className="container-fluid px-3 px-md-5">
-			<div className="row justify-content-center">
-				<div className="col-12 col-md-10 col-lg-8">
-					<div className="d-flex justify-content-between align-items-center mb-4">
-						<h1 className="mb-0">Leave Application System</h1>
-						<button className="btn btn-danger" onClick={handleLogoutClick}>
-							Logout
-						</button>
-					</div>
-					<form onSubmit={handleSubmit} className="leave-form text-start">
-						{/* Leave Mode */}
-						<div className="mb-3">
-							<label className="form-label">Leave Mode</label>
-							<Select
-								options={leaveModeOptions}
-								value={leaveModeOptions.find(opt => opt.value === leaveMode)}
-								onChange={(selected) =>
-									dispatch({
-										type: "SET_LEAVE_MODE",
-										payload: selected.value,
-									})
-								}
-								placeholder="Select Leave Mode"
-								isSearchable={false}
-								classNamePrefix="react-select"
-							/>
+		<div className="leave-wrapper">
+			<div className="container-fluid px-3 px-md-5">
+				<div className="row justify-content-center">
+					<div className="col-12 col-md-10 col-lg-8">
+						<div className="d-flex justify-content-between align-items-center mb-4">
+							<h1 className="mb-0">Leave Application System</h1>
+							<button className="btn btn-danger" onClick={handleLogoutClick}>
+								Logout
+							</button>
 						</div>
-
-						{/* Date Picker */}
-						<div className="mb-3">
-							<DatePicker
-								inline
-								selected={
-									leaveMode === "restricted"
-										? null
-										: new Date(currentDay.date)
-								}
-								minDate={today}
-								maxDate={maxDate}
-								dateFormat="yyyy-MM-dd"
-								filterDate={(date) => {
-									const dateOnly = new Date(date);
-									dateOnly.setHours(0, 0, 0, 0);
-									const dateStr = formatDate(dateOnly);
-
-									if (leaveMode === "restricted") {
-										if (dateOnly < today) return false;
-
-										return restrictedDates.includes(dateStr);
-									}
-
-									const day = dateOnly.getDay();
-									const isWeekend = day === 0 || day === 6;
-									const isAdded = addedLeaves.some((l) => l.date === dateStr);
-
-									return !isWeekend && !isAdded;
-								}}
-								onChange={(date) => {
-									if (!date) return;
-									dispatch({
-										type: "SET_CURRENT_DAY",
-										payload: { date: formatDate(date) },
-									});
-								}}
-							/>
-
-						</div>
-
-						{/* Leave Type */}
-						{leaveMode !== "restricted" && (
+						<form onSubmit={handleSubmit} className="leave-form text-start">
+							{/* Leave Mode */}
 							<div className="mb-3">
-								<label className="form-label">Leave Type</label>
+								<label className="form-label fw-bold">Leave Mode</label>
 								<Select
-									options={leaveTypeOptions}
-									value={leaveTypeOptions.find(o => o.value === currentDay.leave_type)}
+									options={leaveModeOptions}
+									value={leaveModeOptions.find(opt => opt.value === leaveMode)}
 									onChange={(selected) =>
 										dispatch({
-											type: "SET_CURRENT_DAY",
-											payload: { leave_type: selected.value },
+											type: "SET_LEAVE_MODE",
+											payload: selected.value,
 										})
 									}
+									placeholder="Select Leave Mode"
+									isSearchable={false}
+									classNamePrefix="react-select"
 								/>
 							</div>
-						)}
 
-						{/* Session */}
-						{leaveMode !== "restricted" &&
-							(currentDay.leave_type === "half_day" ||
-								currentDay.leave_type === "short_leave") && (
+							{/* Date Picker */}
+							<div className="mb-3">
+								<DatePicker
+									inline
+									selected={
+										leaveMode === "restricted"
+											? null
+											: new Date(currentDay.date)
+									}
+									minDate={today}
+									maxDate={maxDate}
+									dateFormat="yyyy-MM-dd"
+									filterDate={(date) => {
+										const dateOnly = new Date(date);
+										dateOnly.setHours(0, 0, 0, 0);
+										const dateStr = formatDate(dateOnly);
+
+										if (leaveMode === "restricted") {
+											if (dateOnly < today) return false;
+
+											return restrictedDates.includes(dateStr);
+										}
+
+										const day = dateOnly.getDay();
+										const isWeekend = day === 0 || day === 6;
+										const isAdded = addedLeaves.some((l) => l.date === dateStr);
+
+										return !isWeekend && !isAdded;
+									}}
+									onChange={(date) => {
+										if (!date) return;
+										dispatch({
+											type: "SET_CURRENT_DAY",
+											payload: { date: formatDate(date) },
+										});
+									}}
+								/>
+
+							</div>
+
+							{/* Leave Type */}
+							{leaveMode !== "restricted" && (
 								<div className="mb-3">
-									<label className="form-label">Session</label>
-									<div className="d-flex gap-3">
-										<div className="form-check">
-											<input
-												type="radio"
-												className="form-check-input"
-												value="morning"
-												id="input-morning"
-												checked={currentDay.session === "morning"}
-												onChange={handleSessionChange}
-											/>
-											<label className="form-check-label" htmlFor="input-morning">Morning</label>
-										</div>
-										<div className="form-check">
-											<input
-												type="radio"
-												className="form-check-input"
-												id="input-evening"
-												value="evening"
-												checked={currentDay.session === "evening"}
-												onChange={handleSessionChange}
-											/>
-											<label className="form-check-label" htmlFor="input-evening">Evening</label>
-										</div>
-									</div>
+									<label className="form-label fw-bold">Leave Type</label>
+									<Select
+										options={leaveTypeOptions}
+										value={leaveTypeOptions.find(o => o.value === currentDay.leave_type)}
+										onChange={(selected) =>
+											dispatch({
+												type: "SET_CURRENT_DAY",
+												payload: { leave_type: selected.value },
+											})
+										}
+									/>
 								</div>
 							)}
 
-						{leaveMode === "multiple" && (
-							<button
-								type="button"
-								className="btn btn-secondary mb-3"
-								onClick={handleAddDay}
-							>
-								Add Day
-							</button>
-						)}
+							{/* Session */}
+							{leaveMode !== "restricted" &&
+								(currentDay.leave_type === "half_day" ||
+									currentDay.leave_type === "short_leave") && (
+									<div className="mb-3">
+										<label className="form-label fw-bold">Session</label>
+										<div className="d-flex gap-2">
+											<label
+												className={`session-btn ${currentDay.session === "morning" ? "active" : ""}`}
+											>
+												<input
+													type="radio"
+													name="session"
+													value="morning"
+													checked={currentDay.session === "morning"}
+													onChange={handleSessionChange}
+												/>
+												Morning
+											</label>
+											<label
+												className={`session-btn ${currentDay.session === "evening" ? "active" : ""}`}
+											>
+												<input
+													type="radio"
+													name="session"
+													value="evening"
+													checked={currentDay.session === "evening"}
+													onChange={handleSessionChange}
+												/>
+												Evening
+											</label>
+										</div>
+									</div>
+								)}
 
-						{/* Multiple Leave Table */}
-						{leaveMode === "multiple" && addedLeaves.length > 0 && (
-							<div className="table-responsive mb-3">
-								<table className="table table-bordered">
-									<thead>
-										<tr>
-											<th>Date</th>
-											<th>Leave Type</th>
-											<th>Session</th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										{addedLeaves.map((l) => (
-											<tr key={l.date}>
-												<td>{l.date}</td>
-												<td>{l.leave_type.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase())}</td>
-												<td>{l.session.replace(/\b\w/g, c => c.toUpperCase()) || "-"}</td>
-												<td>
-													<button
-														type="button"
-														className="btn btn-danger btn-sm"
-														onClick={() => handleDeleteDay(l.date)}
-													>
-														Delete
-													</button>
-												</td>
+
+							{leaveMode === "multiple" && (
+								<button
+									type="button"
+									className="btn btn-secondary mb-3"
+									onClick={handleAddDay}
+								>
+									Add Day
+								</button>
+							)}
+
+							{/* Multiple Leave Table */}
+							{leaveMode === "multiple" && addedLeaves.length > 0 && (
+								<div className="table-responsive mb-3">
+									<table className="table table-bordered">
+										<thead>
+											<tr>
+												<th>Date</th>
+												<th>Leave Type</th>
+												<th>Session</th>
+												<th>Action</th>
 											</tr>
-										))}
-									</tbody>
-								</table>
+										</thead>
+										<tbody>
+											{addedLeaves.map((l) => (
+												<tr key={l.date}>
+													<td>{l.date}</td>
+													<td>{l.leave_type.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase())}</td>
+													<td>{l.session.replace(/\b\w/g, c => c.toUpperCase()) || "-"}</td>
+													<td>
+														<button
+															type="button"
+															className="btn btn-danger btn-sm"
+															onClick={() => handleDeleteDay(l.date)}
+														>
+															Delete
+														</button>
+													</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
+								</div>
+							)}
+
+
+							{/* Reason */}
+							<div className="mb-3">
+								<label className="form-label fw-bold">Reason</label>
+								<textarea
+									className="form-control"
+									placeholder="Reason for leave . . ."
+									rows="3"
+									value={reason}
+									onChange={(e) =>
+										dispatch({ type: "SET_REASON", payload: e.target.value })
+									}
+									required
+								/>
 							</div>
-						)}
 
+							<button className="btn btn-primary" disabled={loading}>
+								{loading ? "Submitting..." : "Submit Leave"}
+							</button>
 
-						{/* Reason */}
-						<div className="mb-3">
-							<label className="form-label">Reason</label>
-							<textarea
-								className="form-control"
-								placeholder="Reason for leave . . ."
-								rows="3"
-								value={reason}
-								onChange={(e) =>
-									dispatch({ type: "SET_REASON", payload: e.target.value })
-								}
-								required
-							/>
-						</div>
-
-						<button className="btn btn-primary" disabled={loading}>
-							{loading ? "Submitting..." : "Submit Leave"}
-						</button>
-
-					</form>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
